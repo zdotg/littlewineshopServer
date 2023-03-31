@@ -79,73 +79,36 @@ wineRouter
       .catch((err) => next(err));
   });
 
-// review requests
+// Search request
 wineRouter
-  .route("/:wineId/review")
+  .route("/search")
   .get((req, res, next) => {
-    Wine.findById(req.params.wineId)
-      .then((wine) => {
-        if (wine) {
+    // Perform search logic here, using req.query to access search parameters
+    const searchTerm = req.query.searchTerm;
+    Wine.find({ name: { $regex: searchTerm, $options: "i" } })
+      .then((wines) => {
+        if (wines) {
           res.statusCode = 200;
           res.setHeader("Content-Type", "application/json");
-          res.json(wine.review);
+          res.json(wines);
         } else {
-          err = new Error(`Wine ${req.params.wineId} not found`);
+          err = new Error(`No wines found for search term ${searchTerm}`);
           err.status = 404;
           return next(err);
         }
       })
       .catch((err) => next(err));
   })
-  .post((req, res, next) => {
-    Wine.findById(req.params.wineId)
-      .then((wine) => {
-        if (wine) {
-          wine.review.push(req.body);
-          wine
-            .save()
-            .then((wine) => {
-              res.statusCode = 200;
-              res.setHeader("Content-Type", "application/json");
-              res.json(wine);
-            })
-            .catch((err) => next(err));
-        } else {
-          err = new Error(`Wine ${req.params.wineId} not found`);
-          err.status = 404;
-          return next(err);
-        }
-      })
-      .catch((err) => next(err));
+  .post((req, res) => {
+    res.statusCode = 403;
+    res.end("POST operation not supported on /wines/search");
   })
   .put((req, res) => {
     res.statusCode = 403;
-    res.end(
-      `PUT operation not supported on /wines/${req.params.wineId}/review`
-    );
+    res.end("PUT operation not supported on /wines/search");
   })
-  .delete((req, res, next) => {
-    Wine.findById(req.params.wineId)
-      .then((wine) => {
-        if (wine) {
-          for (let i = wine.review.length - 1; i >= 0; i--) {
-            wine.review.id(wine.review[i]._id).remove();
-          }
-          wine
-            .save()
-            .then((wine) => {
-              res.statusCode = 200;
-              res.setHeader("Content-Type", "application/json");
-              res.json(wine);
-            })
-            .catch((err) => next(err));
-        } else {
-          err = new Error(`Wine ${req.params.wineId} not found`);
-          err.status = 404;
-          return next(err);
-        }
-      })
-      .catch((err) => next(err));
+  .delete((req, res) => {
+    res.statusCode = 403;
+    res.end("DELETE operation not supported on /wines/search");
   });
-
 module.exports = wineRouter;
