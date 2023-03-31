@@ -79,16 +79,16 @@ wineRouter
       .catch((err) => next(err));
   });
 
-// description requests
+// review requests
 wineRouter
-  .route("/:wineId/description")
+  .route("/:wineId/review")
   .get((req, res, next) => {
     Wine.findById(req.params.wineId)
       .then((wine) => {
         if (wine) {
           res.statusCode = 200;
           res.setHeader("Content-Type", "application/json");
-          res.json(wine.description);
+          res.json(wine.review);
         } else {
           err = new Error(`Wine ${req.params.wineId} not found`);
           err.status = 404;
@@ -101,7 +101,7 @@ wineRouter
     Wine.findById(req.params.wineId)
       .then((wine) => {
         if (wine) {
-          wine.description.push(req.body);
+          wine.review.push(req.body);
           wine
             .save()
             .then((wine) => {
@@ -121,15 +121,15 @@ wineRouter
   .put((req, res) => {
     res.statusCode = 403;
     res.end(
-      `PUT operation not supported on /wines/${req.params.wineId}/description`
+      `PUT operation not supported on /wines/${req.params.wineId}/review`
     );
   })
   .delete((req, res, next) => {
     Wine.findById(req.params.wineId)
       .then((wine) => {
         if (wine) {
-          for (let i = wine.description.length - 1; i >= 0; i--) {
-            wine.description.id(wine.description[i]._id).remove();
+          for (let i = wine.review.length - 1; i >= 0; i--) {
+            wine.review.id(wine.review[i]._id).remove();
           }
           wine
             .save()
