@@ -83,9 +83,9 @@ wineRouter
 wineRouter
   .route("/search")
   .get((req, res, next) => {
-    // Perform search logic here, using req.query to access search parameters
+    // Performing search logic here, using req.query to access search parameters
     const searchTerm = req.query.searchTerm;
-    Wine.find({ name: { $regex: searchTerm, $options: "i" } })
+    Wine.find({ name: { $regex: searchTerm, $options: "mxu" } })
       .then((wines) => {
         if (wines) {
           res.statusCode = 200;
@@ -111,4 +111,5 @@ wineRouter
     res.statusCode = 403;
     res.end("DELETE operation not supported on /wines/search");
   });
+
 module.exports = wineRouter;
